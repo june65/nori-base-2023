@@ -6,7 +6,7 @@
 
     <!-- Render the visible surface normals -->
     <integrator type="normals"/>
-
+	
     <!-- Load the Stanford bunny (https://graphics.stanford.edu/data/3Dscanrep/) -->
 	<mesh type="obj">
 		<string name="filename" value="bunny.obj"/>

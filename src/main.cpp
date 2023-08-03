@@ -159,12 +159,23 @@ static void render(Scene *scene, const std::string &filename) {
     bitmap->savePNG(outputName);
 }
 
-int main(int argc, char **argv) {
+int main(){//(int argc, char **argv) {
+
+    
+    int argc = 2;
+    std::vector<const char*>  argv = { "C:/A/nori-base-2023/build/Debug/nori.exe", "C:/A/nori-base-2023/scenes/pa2/ajax-normals.xml" };
+    /*
+    argv[0] = "C:/A/nori-base-2023/build/Debug/nori.exe";
+    argv[1] = "C:/A/nori-base-2023/scenes/pa1/bunny.xml";
+    
+    std::cout << "The number is: " << argv[0] << std::endl;
+    std::cout << "The number is: " << argv[0] << std::endl;
+    std::cout << "The number is: " << argc << std::endl;
     if (argc < 2) {
         cerr << "Syntax: " << argv[0] << " <scene.xml> [--no-gui] [--threads N]" <<  endl;
         return -1;
     }
-
+    */
     std::string sceneName = "";
     std::string exrName = "";
 
@@ -191,9 +202,12 @@ int main(int argc, char **argv) {
 
         filesystem::path path(argv[i]);
 
+        
+        
         try {
             if (path.extension() == "xml") {
                 sceneName = argv[i];
+                
 
                 /* Add the parent directory of the scene file to the
                    file resolver. That way, the XML file can reference
@@ -212,6 +226,7 @@ int main(int argc, char **argv) {
         }
     }
 
+    
     if (exrName !="" && sceneName !="") {
         cerr << "Both .xml and .exr files were provided. Please only provide one of them." << endl;
         return -1;
@@ -256,3 +271,4 @@ int main(int argc, char **argv) {
 
     return 0;
 }
+
