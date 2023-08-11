@@ -163,7 +163,7 @@ int main(){//(int argc, char **argv) {
 
     
     int argc = 2;
-    std::vector<const char*>  argv = { "C:/A/nori-base-2023/build/Debug/nori.exe", "C:/A/nori-base-2023/scenes/pa2/ajax-normals.xml" };
+    std::vector<const char*>  argv = { "C:/A/nori-base-2023/build/Debug/nori.exe", "C:/A/nori-base-2023/scenes/pa3/ajax-simple.xml" };
     /*
     argv[0] = "C:/A/nori-base-2023/build/Debug/nori.exe";
     argv[1] = "C:/A/nori-base-2023/scenes/pa1/bunny.xml";
