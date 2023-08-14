@@ -13,28 +13,24 @@ public:
         Intersection its;
         if (!scene->rayIntersect(ray, its))
             return Color3f(0.0f);
-        else{
+        
             Point3f  x = its.p;
             Color3f L(0.0f);
-            int SAMPLE_NUM = 1;
+            int SAMPLE_NUM = 16;
             for (int i = 0; i < SAMPLE_NUM; i++)
             {
                 Vector3f dir = Warp::squareToCosineHemisphere(sampler->next2D());
                 float pdf = Warp::squareToCosineHemispherePdf(dir);
-                Vector3f w = dir.normalized();
-                float alpha = 1000.f;
-                Ray3f shadowRay = Ray3f(x , x + w * alpha);
+                Vector3f w = its.shFrame.toWorld(dir).normalized();
+                float alpha = 10000.f;
+                Ray3f shadowRay = Ray3f(x + w/alpha, w*alpha);
                 if(!scene->rayIntersect(shadowRay)) {
                     float cosine = its.shFrame.n.dot(w);
                     L += cosine / M_PI / pdf;
                 }
-                
             }
             L /= float(SAMPLE_NUM);
             return L;
-            
-        }
-        
     }   
 
     std::string toString() const {
