@@ -38,6 +38,14 @@ void Mesh::activate() {
         m_bsdf = static_cast<BSDF *>(
             NoriObjectFactory::createInstance("diffuse", PropertyList()));
     }
+    m_dpdf.clear();
+
+    for (uint32_t i = 0; i < getTriangleCount(); i++)
+    {
+        m_dpdf.append(surfaceArea(i));
+    }
+
+    m_dpdf.normalize();
 }
 
 float Mesh::surfaceArea(uint32_t index) const {
@@ -101,6 +109,7 @@ Point3f Mesh::getCentroid(uint32_t index) const {
          m_V.col(m_F(2, index)));
 }
 
+
 void Mesh::addChild(NoriObject *obj) {
     switch (obj->getClassType()) {
         case EBSDF:
@@ -125,6 +134,35 @@ void Mesh::addChild(NoriObject *obj) {
     }
 }
 
+SampleResult Mesh::samplePosition(Sampler *sampler) {
+    float pdf = sampler->next1D();
+    size_t idx = m_dpdf.sample(pdf);
+    uint32_t i0 = m_F(0, idx), i1 = m_F(1, idx), i2 = m_F(2, idx);
+    
+    Point2f randomPoint = sampler->next2D();
+    float alpha = 1 - sqrt(1 - randomPoint.x());
+    float beta = randomPoint.y() * sqrt(1 - randomPoint.x());
+    
+    Eigen::Matrix3f P;
+    P << m_V.col(i0), m_V.col(i1), m_V.col(i2);
+    Eigen::Vector3f coeffs(alpha, beta, 1-alpha-beta);
+
+
+    SampleResult result;
+    result.p = P * coeffs;
+    if (getVertexNormals().size() != 0){
+        Eigen::Matrix3f N;
+        N << m_N.col(i0), m_N.col(i1), m_N.col(i2);
+        result.n = (N * coeffs).normalized();
+    }
+    else{
+        Vector3f n1 = m_V.col(i0) - m_V.col(i1), n2 = m_V.col(i0) - m_V.col(i2);
+        result.n = n1.cross(n2).normalized();
+    }
+    result.probabilityDensity = m_dpdf.getNormalization();
+    return result;
+};
+
 std::string Mesh::toString() const {
     return tfm::format(
         "Mesh[\n"
@@ -140,6 +178,11 @@ std::string Mesh::toString() const {
         m_bsdf ? indent(m_bsdf->toString()) : std::string("null"),
         m_emitter ? indent(m_emitter->toString()) : std::string("null")
     );
+}
+
+float Mesh::getTotalArea()
+{
+    return 1.0f / m_dpdf.getNormalization();
 }
 
 std::string Intersection::toString() const {

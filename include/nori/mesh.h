@@ -21,6 +21,8 @@
 #include <nori/object.h>
 #include <nori/frame.h>
 #include <nori/bbox.h>
+#include <nori/dpdf.h>
+#include <nori/sampler.h>
 
 NORI_NAMESPACE_BEGIN
 
@@ -61,6 +63,13 @@ struct Intersection {
 
     /// Return a human-readable summary of the intersection record
     std::string toString() const;
+};
+
+struct SampleResult
+{
+    Point3f p;
+    Normal3f n;
+    float probabilityDensity;
 };
 
 /**
@@ -163,6 +172,10 @@ public:
      * */
     EClassType getClassType() const { return EMesh; }
 
+    SampleResult samplePosition(Sampler* sampler);
+
+    float getTotalArea();
+
 protected:
     /// Create an empty mesh
     Mesh();
@@ -176,6 +189,7 @@ protected:
     BSDF         *m_bsdf = nullptr;      ///< BSDF of the surface
     Emitter    *m_emitter = nullptr;     ///< Associated emitter, if any
     BoundingBox3f m_bbox;                ///< Bounding box of the mesh
+    DiscretePDF m_dpdf;
 };
 
 NORI_NAMESPACE_END
