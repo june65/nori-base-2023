@@ -45,6 +45,7 @@ void Accel::build()
     std::vector<uint32_t> triangleIndices(totalTriangleCnt); 
     std::vector<uint32_t> meshIndices(totalTriangleCnt); 
     uint32_t offset = 0;
+    printf("here");
     for (int meshIdx = 0; meshIdx < m_mesh_nums; meshIdx++)
     {
         uint32_t curMeshTriangleCnt = m_meshes[meshIdx]->getTriangleCount();
@@ -182,22 +183,6 @@ bool Accel::rayIntersect(const Ray3f &ray_, Intersection &its, bool shadowRay) c
     if (shadowRay)
         return foundIntersection;
 
-    /* Brute force search through all triangles */
-    //for (uint32_t idx = 0; idx < m_mesh->getTriangleCount(); ++idx) {
-    //    float u, v, t;
-    //    if (m_mesh->rayIntersect(idx, ray, u, v, t)) {
-    //        /* An intersection was found! Can terminate
-    //           immediately if this is a shadow ray query */
-    //        if (shadowRay)
-    //            return true;
-    //        ray.maxt = its.t = t;
-    //        its.uv = Point2f(u, v);
-    //        its.mesh = m_mesh;
-    //        f = idx;
-    //        foundIntersection = true;
-    //    }
-    //}
-
     if (foundIntersection) {
         /* At this point, we now know that there is an intersection,
            and we know the triangle index of the closest such intersection.
@@ -286,33 +271,6 @@ bool Accel::traversalIntersect(const Node& node, Ray3f& ray, Intersection& its, 
     }
     if (node.child)
     {
-        ////################## Improved ray traversal ################
-        ////建立<childIdx, childNodeBBoxToRayDistance>
-        //std::vector<std::pair<int, float>> childToRayDistances(8);
-        //for (int i = 0; i < 8; i++)
-        //{
-        //    Node* childNode = node.child[i];
-        //    float distance = std::numeric_limits<float>::max();
-        //    if (childNode)
-        //    {
-        //        distance = childNode->bbox.distanceTo(ray.o);
-        //    }
-        //    childToRayDistances[i] = std::make_pair(i, distance);
-        //}
-        //sort(childToRayDistances.begin(), childToRayDistances.end(), sortChildToRayDistance);
-        ////按到光线起始点距离从近到远遍历
-        //for (int i = 0; i < 8; i++)
-        //{
-        //    int childIndex = childToRayDistances[i].first;
-        //    Node* childNode = node.child[childIndex];
-        //    if (childNode)
-        //    {
-        //        foundIntersection = traversalIntersect(*childNode, ray, its, shadowRay, hit_idx) || foundIntersection;
-        //    }
-        //    if (shadowRay && foundIntersection)
-        //        return true;
-        //}
-        //################## ray traversal ################
         for (int i = 0; i < 8; i++)
         {
             Node* childNode = node.child[i];

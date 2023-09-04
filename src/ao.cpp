@@ -24,12 +24,19 @@ public:
                 Vector3f w = its.shFrame.toWorld(dir).normalized();
                 float alpha = 10000.f;
                 Ray3f shadowRay = Ray3f(x + w/alpha, w*alpha);
+                float cosine = its.shFrame.n.dot(w);
                 if(!scene->rayIntersect(shadowRay)) {
-                    float cosine = its.shFrame.n.dot(w);
                     L += cosine / M_PI / pdf;
                 }
+                //Vector3f reflection = dir - 2 * dir.dot(its.shFrame.n) * its.shFrame.n;
+                Vector3f reflection = - dir + 2 * dir.dot(its.shFrame.n) * its.shFrame.n;
+                Ray3f shadowRay2 = Ray3f(x + reflection/alpha, reflection*alpha);
+                if(!scene->rayIntersect(shadowRay2)) {
+                    L += cosine / M_PI / pdf;
+                }
+                
             }
-            L /= float(SAMPLE_NUM);
+            L /= float(SAMPLE_NUM)*2;
             return L;
     }   
 
